@@ -11,6 +11,21 @@ struct SettingsView: View {
     var body: some View {
         Form {
             Section {
+                NavigationLink {
+                    DictionaryPackSettingsView()
+                } label: {
+                    Label("Fetch dictionary", systemImage: "book.closed")
+                }
+                NavigationLink {
+                    LLMConnectionSettingsView()
+                } label: {
+                    Label("Connect to your LLM", systemImage: "cloud")
+                }
+            } footer: {
+                Text("Kept separate on purpose: an on-device dictionary works fully offline with nothing leaving your device, while a cloud LLM provider needs a network connection and sends context to that provider's servers.")
+            }
+
+            Section {
                 ForEach(SupportedLanguage.allCases.sorted { $0.displayName < $1.displayName }, id: \.self) { language in
                     Toggle(language.displayName, isOn: binding(for: language))
                 }

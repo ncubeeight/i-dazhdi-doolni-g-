@@ -6,6 +6,7 @@ import SwiftUI
 enum AppSettings {
     static let enabledLanguagesKey = "enabledLanguagesRawValues"
     static let colorSchemeKey = "preferredColorSchemeRawValue"
+    static let enabledMCPProvidersKey = "enabledMCPProviderRawValues"
 
     /// Decodes the comma-joined raw value @AppStorage stores. An empty or
     /// unparseable value means "everything enabled" — the default before
@@ -18,6 +19,17 @@ enum AppSettings {
 
     static func rawValue(from languages: Set<SupportedLanguage>) -> String {
         languages.map(\.rawValue).joined(separator: ",")
+    }
+
+    /// Unlike languages(from:), an empty/unparseable value here means "none
+    /// connected" — connecting a cloud LLM provider must always be an
+    /// explicit opt-in, never a default.
+    static func mcpProviders(from rawValue: String) -> Set<MCPProvider> {
+        Set(rawValue.split(separator: ",").compactMap { MCPProvider(rawValue: String($0)) })
+    }
+
+    static func rawValue(from providers: Set<MCPProvider>) -> String {
+        providers.map(\.rawValue).joined(separator: ",")
     }
 }
 

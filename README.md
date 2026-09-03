@@ -39,8 +39,25 @@ architecture as an additional, LLM-independent lookup path.
 
 ## Status
 
-Freshly forked — dictionary-pack architecture (manifest format, importer,
-on-device lookup service) is in progress.
+Scaffolding in place:
+
+- `App/DictionaryPacks/` — pack manifest format (`DictionaryPackManifest`,
+  `DictionaryPackContents`), on-device store (`DictionaryPackStore`),
+  importer (`DictionaryPackImporter`), and in-memory lookup service
+  (`DictionaryLookupService`). A pack is a single JSON file
+  (`{manifest, entries}`); import copies it into the app's own container,
+  offline, no network call.
+- `App/LLMConnection/` — a separate, explicitly opt-in settings screen for
+  connecting cloud LLM providers via MCP (Claude, Gemini, ChatGPT,
+  Perplexity). Selection-only for now; not wired to an actual MCP client.
+- Settings now leads with two entries above the language toggles: "Fetch
+  dictionary" (on-device, offline) and "Connect to your LLM" (cloud,
+  requires connectivity) — kept on separate screens because of their very
+  different privacy/connectivity tradeoffs.
+
+Not yet done: a real Navajo Translation Project dictionary pack file, and
+wiring `DictionaryLookupService` into the existing word-gloss/flashcard UI
+so a pack is actually consulted when a term is tapped.
 
 ## License
 
