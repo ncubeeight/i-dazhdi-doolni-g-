@@ -173,9 +173,14 @@ private struct TranscriptWordToken: View {
     @State private var addedEntry: VocabularyEntry?
     @State private var glossState: GlossState = .loading
 
+    private enum GlossSource: Equatable {
+        case dictionaryPack
+        case onDeviceModel
+    }
+
     private enum GlossState {
         case loading
-        case ready(String)
+        case ready(String, source: GlossSource)
         case failed
     }
 
@@ -211,10 +216,16 @@ private struct TranscriptWordToken: View {
             case .loading:
                 ProgressView()
                     .controlSize(.small)
-            case .ready(let gloss):
+            case .ready(let gloss, let source):
                 Text(gloss)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+                Label(
+                    source == .dictionaryPack ? "On-device dictionary" : "On-device model",
+                    systemImage: source == .dictionaryPack ? "book.closed" : "sparkles"
+                )
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
             case .failed:
                 EmptyView()
             }
@@ -249,10 +260,22 @@ private struct TranscriptWordToken: View {
         .frame(minWidth: 220)
     }
 
+    /// Checks an installed on-device dictionary pack first — instant,
+    /// offline, no LLM context exposed anywhere — and only falls back to
+    /// WordGlossGenerator's on-device model gloss when no pack is installed
+    /// for this language, or the word isn't in it.
     private func loadGloss() async {
+        if let entry = DictionaryLookupService.shared.lookup(
+            term: word,
+            languageCode: language.dictionaryPackLanguageCode
+        ) {
+            glossState = .ready(entry.gloss, source: .dictionaryPack)
+            return
+        }
+
         do {
             let gloss = try await WordGlossGenerator.gloss(forWord: word, language: language)
-            glossState = .ready(gloss)
+            glossState = .ready(gloss, source: .onDeviceModel)
         } catch {
             glossState = .failed
         }

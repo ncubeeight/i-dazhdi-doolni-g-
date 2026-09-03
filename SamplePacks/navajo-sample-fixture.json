@@ -1,0 +1,44 @@
+{
+  "manifest": {
+    "id": "nv-en-sample-fixture-v1",
+    "languageCode": "nv",
+    "displayName": "Navajo (Diné) — Sample Fixture",
+    "version": "0.1.0-fixture",
+    "entryCount": 6,
+    "sourceDescription": "Small illustrative test fixture (well-known, widely published terms) — NOT the Navajo Translation Project's ~12,800-entry dataset. Use this to test the import → on-device lookup → tap-to-define pipeline; replace with a real pack sourced from the Navajo Translation Project's GitLab dataset before relying on it for actual study.",
+    "license": "Public domain / commonly published terms",
+    "checksumSHA256": null
+  },
+  "entries": [
+    {
+      "term": "yá'át'ééh",
+      "gloss": "hello",
+      "partOfSpeech": "interjection"
+    },
+    {
+      "term": "ahéhee'",
+      "gloss": "thank you",
+      "partOfSpeech": "interjection"
+    },
+    {
+      "term": "hágoónee'",
+      "gloss": "goodbye, until we meet again",
+      "partOfSpeech": "interjection"
+    },
+    {
+      "term": "Diné",
+      "gloss": "the Navajo people; \"the people\"",
+      "partOfSpeech": "noun"
+    },
+    {
+      "term": "shí",
+      "gloss": "I, me",
+      "partOfSpeech": "pronoun"
+    },
+    {
+      "term": "Naabeehó",
+      "gloss": "Navajo (endonym for the Navajo Nation)",
+      "partOfSpeech": "noun"
+    }
+  ]
+}
