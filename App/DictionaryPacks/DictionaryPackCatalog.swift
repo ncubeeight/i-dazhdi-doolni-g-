@@ -9,30 +9,35 @@ import Foundation
 ///
 /// Extending this to a new dual-language pack (e.g. Tamil–Gujarati, Latin–
 /// English, Farsi–English) is adding one more `RemoteDictionaryPackSource`
-/// entry — no other code changes, as long as the source publishes its data
-/// in the {manifest, entries} JSON shape DictionaryPackContents expects
-/// (see SamplePacks/README.md for the exact format).
+/// entry — no other code changes, as long as the source either publishes a
+/// {manifest, entries} JSON directly (`.dictionaryPackJSON`), or a new
+/// parser is added alongside NavajoKitTrainingDataParser for its own format.
 enum DictionaryPackCatalog {
     static let availableSources: [RemoteDictionaryPackSource] = [
         RemoteDictionaryPackSource(
             id: "nv-en-navajo-translation-project",
             displayName: "Navajo (Diné)",
             languageCode: "nv",
-            summary: "~12,800 entries from the open-source Navajo Translation Project.",
+            summary: "~12,800 single-word and compound-word entries from the open-source Navajo Translation Project (NavajoKit). CC BY-SA 4.0 — attribution and share-alike terms apply.",
             gitLabProjectPath: "HullBreach/navajokit",
-            // Left unset deliberately: gitlab.com is unreachable from the
-            // environment this catalog was authored in, so the exact path
-            // to the dictionary data file inside this repo (and whether
-            // NavajoKit — a Swift package built for in-app translation —
-            // already publishes it in DictionaryPackContents' JSON shape,
-            // or needs a conversion step first) couldn't be confirmed.
-            // Once confirmed, set this to that path, e.g.
-            // "Sources/NavajoKit/Resources/dictionary.json", and
-            // downloadURL will start resolving.
-            filePath: nil,
+            // Confirmed directly against the real repo (2026-09-03):
+            // Package.swift lists these as the package's bundled resources,
+            // and both files share the TOKENS/LABELS/english header
+            // NavajoKitTrainingDataParser expects (11,254 + 1,583 rows ≈
+            // the ~12,800 the project advertises). NavajoKit also ships
+            // NVClauses.csv/NVPassages.csv (example sentences/passages,
+            // not single dictionary entries) — left out for now, not
+            // because they're unusable, just a different shape than a
+            // term/gloss dictionary entry.
+            filePaths: [
+                "Sources/NavajoKit/Resources/training_data/NVSingleWords.csv",
+                "Sources/NavajoKit/Resources/training_data/NVCompoundWords.csv",
+            ],
+            format: .navajoKitTrainingCSV,
             ref: "main",
-            sourceDescription: "Navajo Translation Project (NavajoKit)",
-            license: "See gitlab.com/HullBreach/navajokit for license terms"
+            version: "main",
+            sourceDescription: "Navajo Translation Project (NavajoKit) — NVSingleWords.csv + NVCompoundWords.csv",
+            license: "CC BY-SA 4.0 — Navajo Translation Project / NavajoKit (gitlab.com/HullBreach/navajokit)"
         )
 
         // Future dual-language packs go here, e.g.:
@@ -42,8 +47,10 @@ enum DictionaryPackCatalog {
         //     languageCode: "ta",
         //     summary: "...",
         //     gitLabProjectPath: "...",
-        //     filePath: "...",
+        //     filePaths: ["..."],
+        //     format: .dictionaryPackJSON,
         //     ref: "main",
+        //     version: "1.0.0",
         //     sourceDescription: "...",
         //     license: "..."
         // ),

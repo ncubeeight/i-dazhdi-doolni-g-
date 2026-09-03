@@ -87,7 +87,7 @@ struct DictionaryPackSettingsView: View {
             if downloadingSourceIDs.contains(source.id) {
                 ProgressView()
                     .controlSize(.small)
-            } else if source.filePath == nil {
+            } else if source.filePaths.isEmpty {
                 Text("Not yet available")
                     .font(.caption)
                     .foregroundStyle(.secondary)

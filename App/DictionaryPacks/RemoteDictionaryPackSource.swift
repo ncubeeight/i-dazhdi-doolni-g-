@@ -1,5 +1,19 @@
 import Foundation
 
+/// How a RemoteDictionaryPackSource's file(s) are shaped, and therefore how
+/// GitLabDictionaryPackFetcher needs to turn them into a DictionaryPackContents.
+enum RemoteDictionaryPackFormat {
+    /// The file already is one JSON document matching DictionaryPackContents
+    /// — fetched as-is and handed straight to DictionaryPackImporter.
+    case dictionaryPackJSON
+
+    /// One or more CSVs following NavajoKit's training_data schema (see
+    /// NavajoKitTrainingDataParser) — fetched and parsed into entries, then
+    /// wrapped in a manifest this app constructs itself, since the upstream
+    /// CSVs carry no manifest of their own.
+    case navajoKitTrainingCSV
+}
+
 /// A dictionary pack the app knows how to fetch from GitLab, listed under
 /// Settings → Fetch dictionary → "Available to download". Distinct from an
 /// installed DictionaryPackManifest: this describes where to get a pack,
@@ -17,14 +31,24 @@ struct RemoteDictionaryPackSource: Identifiable {
     /// GitLab namespace/project, e.g. "HullBreach/navajokit".
     var gitLabProjectPath: String
 
-    /// Path to the pack's JSON file ({manifest, entries}, see
-    /// DictionaryPackContents) within that repository. `nil` means this
-    /// source is listed but not yet downloadable — its exact file path
-    /// hasn't been confirmed against the upstream repo yet.
-    var filePath: String?
+    /// Paths (within that repository) to the file(s) backing this pack.
+    /// Empty means this source is listed but not yet downloadable — its
+    /// file path(s) haven't been confirmed against the upstream repo yet.
+    /// For `.dictionaryPackJSON` this holds exactly one path. For
+    /// `.navajoKitTrainingCSV` it can hold several same-schema CSVs
+    /// (e.g. single words + compound words), concatenated into one pack.
+    var filePaths: [String]
+
+    var format: RemoteDictionaryPackFormat
 
     /// Branch or tag to fetch from.
     var ref: String
+
+    /// Version string for the resulting DictionaryPackManifest. For
+    /// `.navajoKitTrainingCSV` there's no upstream version to read (the
+    /// CSVs don't carry one), so this is just `ref` by convention —
+    /// "whatever this branch currently has."
+    var version: String
 
     var sourceDescription: String
     var license: String
@@ -32,11 +56,9 @@ struct RemoteDictionaryPackSource: Identifiable {
     /// GitLab's repository-files API, which serves a single file's raw
     /// content by project + path + ref — the documented, stable way to
     /// fetch one file from a public GitLab project without cloning it.
-    /// `nil` whenever `filePath` hasn't been set yet.
-    var downloadURL: URL? {
-        guard let filePath else { return nil }
+    func downloadURL(forPath path: String) -> URL? {
         let project = Self.gitLabIDEncode(gitLabProjectPath)
-        let file = Self.gitLabIDEncode(filePath)
+        let file = Self.gitLabIDEncode(path)
         var components = URLComponents(string: "https://gitlab.com/api/v4/projects/\(project)/repository/files/\(file)/raw")
         components?.queryItems = [URLQueryItem(name: "ref", value: ref)]
         return components?.url

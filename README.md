@@ -46,11 +46,16 @@ Scaffolding in place:
   importer (`DictionaryPackImporter`), in-memory lookup service
   (`DictionaryLookupService`), and a GitLab downloader
   (`GitLabDictionaryPackFetcher` + `DictionaryPackCatalog`,
-  `RemoteDictionaryPackSource`). A pack is a single JSON file
+  `RemoteDictionaryPackSource`). An installed pack is always one JSON file
   (`{manifest, entries}`); both import (file already on device) and
   download (fetched once from GitLab) funnel into the same
   `DictionaryPackImporter.importPack(from: Data)`, which is the only place
-  a pack is validated and written to the app's own container.
+  a pack is validated and written to the app's own container. A remote
+  source doesn't have to already be in that JSON shape — the catalog can
+  declare a source's real format (`RemoteDictionaryPackFormat`) and
+  `GitLabDictionaryPackFetcher` converts on the fly; the Navajo entry uses
+  this to fetch NavajoKit's actual CSV training data and parse it
+  (`NavajoKitTrainingDataParser`) rather than requiring a pre-converted copy.
 - `App/LLMConnection/` — a separate, explicitly opt-in settings screen for
   connecting cloud LLM providers via MCP (Claude, Gemini, ChatGPT,
   Perplexity). Selection-only for now; not wired to an actual MCP client.
@@ -72,20 +77,36 @@ Scaffolding in place:
   no other code changes, as long as the source publishes its data in the
   same JSON shape.
 
-Known gap: the Navajo Translation Project's real repository is confirmed —
-[gitlab.com/HullBreach/navajokit](https://gitlab.com/HullBreach/navajokit)
-(Swift package "NavajoKit," ~12,800-entry dictionary, documented at
-[hullbreach.gitlab.io/navajokit](https://hullbreach.gitlab.io/navajokit/documentation/nava))
-— but its catalog entry's `filePath` is deliberately left unset, because
-gitlab.com couldn't be browsed from the environment this catalog was
-written in to confirm the exact path to its dictionary data file, or
-whether that data is already in `DictionaryPackContents`' JSON shape or
-needs converting first. Until that's confirmed and set, the Navajo entry
-shows as "Not yet available" rather than attempting a download that would
-likely 404. `SamplePacks/navajo-sample-fixture.json` (a handful of
-well-known words, imported via "Connect on-device dictionary") remains the
-way to exercise the lookup/tap-to-define pipeline in the meantime.
+The Navajo catalog entry is now real and downloadable — confirmed directly
+against [gitlab.com/HullBreach/navajokit](https://gitlab.com/HullBreach/navajokit)
+(the Swift package "NavajoKit," documented at
+[hullbreach.gitlab.io/navajokit](https://hullbreach.gitlab.io/navajokit/documentation/nava)):
+it fetches `NVSingleWords.csv` (11,254 entries) and `NVCompoundWords.csv`
+(1,583 entries) — ≈12,837 total, matching the project's advertised
+~12,800 — parses NavajoKit's real header schema
+(`TOKENS,LABELS,english,...`, columns located by name since the two files
+order them slightly differently), and builds the pack's manifest itself
+(the CSVs carry no manifest of their own). `SamplePacks/navajo-sample-fixture.json`
+still exists as a tiny, instant fixture for exercising the pipeline without
+a network call.
+
+*(How this got confirmed: `gitlab.com` is unreachable from the environment
+this catalog was originally authored in, so a one-time GitHub Actions
+mirror — `ncubeeight/navajokit-new` — was used to read the real repo
+structure once. The app itself has no dependency on that mirror; its
+catalog entry fetches straight from `gitlab.com` at runtime, same as any
+other GitLab-hosted pack.)*
 
 ## License
 
-Apache License 2.0 (see `LICENSE`).
+This repository's own code is Apache License 2.0 (see `LICENSE`).
+
+Dictionary data fetched or imported at runtime keeps **its own** license —
+it is not relicensed as Apache 2.0 just by passing through this app. The
+Navajo (Diné) pack fetched via Settings → Fetch dictionary is
+**CC BY-SA 4.0**, per the Navajo Translation Project
+([gitlab.com/HullBreach/navajokit](https://gitlab.com/HullBreach/navajokit)):
+attribution is required, and any redistributed or adapted form of that
+data must stay under a compatible ShareAlike license. `DictionaryPackManifest.license`
+carries this per-pack for exactly that reason — check it before
+redistributing any pack's contents.
