@@ -20,16 +20,17 @@ enum DictionaryPackImportError: LocalizedError {
     }
 }
 
-/// Validates a picked dictionary-pack file and installs it: copies the full
+/// Validates dictionary-pack bytes and installs them: copies the full
 /// contents into the app's own container and registers the manifest in
 /// DictionaryPackStore. Import is the only place pack files get parsed —
 /// DictionaryLookupService trusts the copy it made here and never
 /// re-validates it.
 ///
-/// This is a purely local, offline operation: the picked file already lives
-/// on the user's device (their own download, AirDrop, or a pack they built)
-/// and nothing here makes a network call, in keeping with the same
-/// no-live-API approach as the rest of the app.
+/// Two things can hand this bytes: a file the user picked (already on
+/// their device — their own download, AirDrop, or a pack they built) or
+/// GitLabDictionaryPackFetcher's one-time download of a catalog entry.
+/// Either way, `importPack(from: Data)` is the single point where bytes
+/// become an installed pack — no network call happens in this type itself.
 enum DictionaryPackImporter {
 
     static func importPack(from sourceURL: URL) throws -> DictionaryPackManifest {
@@ -46,6 +47,10 @@ enum DictionaryPackImporter {
             throw DictionaryPackImportError.couldNotAccessSecurityScopedResource
         }
 
+        return try importPack(from: data)
+    }
+
+    static func importPack(from data: Data) throws -> DictionaryPackManifest {
         let contents: DictionaryPackContents
         do {
             contents = try JSONDecoder().decode(DictionaryPackContents.self, from: data)
