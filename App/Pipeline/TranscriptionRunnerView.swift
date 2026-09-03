@@ -180,7 +180,7 @@ private struct TranscriptWordToken: View {
 
     private enum GlossState {
         case loading
-        case ready(String, source: GlossSource)
+        case ready(String, source: GlossSource, example: (sentence: String, translation: String)?)
         case failed
     }
 
@@ -216,10 +216,22 @@ private struct TranscriptWordToken: View {
             case .loading:
                 ProgressView()
                     .controlSize(.small)
-            case .ready(let gloss, let source):
+            case .ready(let gloss, let source, let example):
                 Text(gloss)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+                if let example {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(example.sentence)
+                            .font(.caption)
+                            .italic()
+                        Text(example.translation)
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.top, 2)
+                }
                 Label(
                     source == .dictionaryPack ? "On-device dictionary" : "On-device model",
                     systemImage: source == .dictionaryPack ? "book.closed" : "sparkles"
@@ -269,13 +281,19 @@ private struct TranscriptWordToken: View {
             term: word,
             languageCode: language.dictionaryPackLanguageCode
         ) {
-            glossState = .ready(entry.gloss, source: .dictionaryPack)
+            let example: (sentence: String, translation: String)? = {
+                guard let sentence = entry.exampleSentence, let translation = entry.exampleSentenceTranslation else {
+                    return nil
+                }
+                return (sentence, translation)
+            }()
+            glossState = .ready(entry.gloss, source: .dictionaryPack, example: example)
             return
         }
 
         do {
             let gloss = try await WordGlossGenerator.gloss(forWord: word, language: language)
-            glossState = .ready(gloss, source: .onDeviceModel)
+            glossState = .ready(gloss, source: .onDeviceModel, example: nil)
         } catch {
             glossState = .failed
         }

@@ -18,22 +18,30 @@ enum DictionaryPackCatalog {
             id: "nv-en-navajo-translation-project",
             displayName: "Navajo (Diné)",
             languageCode: "nv",
-            summary: "~12,800 single-word and compound-word entries from the open-source Navajo Translation Project (NavajoKit). CC BY-SA 4.0 — attribution and share-alike terms apply.",
+            summary: "~12,800 single-word and compound-word entries, many with an example sentence, from the open-source Navajo Translation Project (NavajoKit). CC BY-SA 4.0 — attribution and share-alike terms apply.",
             gitLabProjectPath: "HullBreach/navajokit",
             // Confirmed directly against the real repo (2026-09-03):
             // Package.swift lists these as the package's bundled resources,
             // and both files share the TOKENS/LABELS/english header
             // NavajoKitTrainingDataParser expects (11,254 + 1,583 rows ≈
-            // the ~12,800 the project advertises). NavajoKit also ships
-            // NVClauses.csv/NVPassages.csv (example sentences/passages,
-            // not single dictionary entries) — left out for now, not
-            // because they're unusable, just a different shape than a
-            // term/gloss dictionary entry.
+            // the ~12,800 the project advertises).
             filePaths: [
                 "Sources/NavajoKit/Resources/training_data/NVSingleWords.csv",
                 "Sources/NavajoKit/Resources/training_data/NVCompoundWords.csv",
             ],
             format: .navajoKitTrainingCSV,
+            // NVClauses.csv's rows are short, already-translated example
+            // sentences — GitLabDictionaryPackFetcher cross-references each
+            // entry's term against these to fill in exampleSentence /
+            // exampleSentenceTranslation. NVPassages.csv was considered too
+            // (same repo, same training_data folder) but excluded: its rows
+            // are full multi-sentence passages (thousands of characters
+            // each — too long for a single word's example), and its third
+            // column is "Source" (a citation), not an English translation,
+            // so there's nothing to pair a passage with anyway.
+            exampleSentenceFilePaths: [
+                "Sources/NavajoKit/Resources/training_data/NVClauses.csv"
+            ],
             ref: "main",
             version: "main",
             sourceDescription: "Navajo Translation Project (NavajoKit) — NVSingleWords.csv + NVCompoundWords.csv",

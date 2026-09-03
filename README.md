@@ -86,7 +86,18 @@ it fetches `NVSingleWords.csv` (11,254 entries) and `NVCompoundWords.csv`
 ~12,800 — parses NavajoKit's real header schema
 (`TOKENS,LABELS,english,...`, columns located by name since the two files
 order them slightly differently), and builds the pack's manifest itself
-(the CSVs carry no manifest of their own). `SamplePacks/navajo-sample-fixture.json`
+(the CSVs carry no manifest of their own).
+
+It also cross-references `NVClauses.csv` (short, already-translated example
+sentences) against every fetched entry, filling in
+`DictionaryEntry.exampleSentence`/`exampleSentenceTranslation` wherever a
+term appears in one of its sentences (`NavajoKitSentenceParser` + the
+enrichment step in `GitLabDictionaryPackFetcher`) — surfaced in the
+tap-to-define popover (`TranscriptWordToken`) underneath the gloss.
+`NVPassages.csv` was considered too but deliberately excluded: its rows are
+full multi-sentence passages (thousands of characters each) with a
+"Source" citation column instead of an English translation, so there's
+nothing short or translated to pair a word with. `SamplePacks/navajo-sample-fixture.json`
 still exists as a tiny, instant fixture for exercising the pipeline without
 a network call.
 

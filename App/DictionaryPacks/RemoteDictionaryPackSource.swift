@@ -41,6 +41,14 @@ struct RemoteDictionaryPackSource: Identifiable {
 
     var format: RemoteDictionaryPackFormat
 
+    /// Optional additional CSVs (same `.navajoKitTrainingCSV` schema, but
+    /// clause-level: see NavajoKitSentenceParser) to cross-reference against
+    /// the entries from `filePaths` and fill in `DictionaryEntry.exampleSentence`
+    /// / `exampleSentenceTranslation` wherever a term appears in one of
+    /// their sentences. Empty means no enrichment — the resulting entries
+    /// just won't have example sentences. Ignored for `.dictionaryPackJSON`.
+    var exampleSentenceFilePaths: [String] = []
+
     /// Branch or tag to fetch from.
     var ref: String
 

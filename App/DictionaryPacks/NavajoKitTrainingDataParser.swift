@@ -66,7 +66,7 @@ enum NavajoKitTrainingDataParser {
                 return value.isEmpty ? nil : value
             }
 
-            entries.append(DictionaryEntry(term: term, gloss: gloss, partOfSpeech: partOfSpeech, exampleSentence: nil))
+            entries.append(DictionaryEntry(term: term, gloss: gloss, partOfSpeech: partOfSpeech, exampleSentence: nil, exampleSentenceTranslation: nil))
         }
         return entries
     }
@@ -77,7 +77,9 @@ enum NavajoKitTrainingDataParser {
     /// quotes. Same RFC 4180 shape NavajoKit's own
     /// NVDataFormatter.splitRecord(fromCsv:) handles — reimplemented here
     /// rather than depending on the NavajoKit package for one function.
-    private static func splitCSVRow(_ row: String) -> [String] {
+    /// Shared with NavajoKitSentenceParser, which parses a structurally
+    /// different NavajoKit CSV but the same underlying quoting convention.
+    static func splitCSVRow(_ row: String) -> [String] {
         var fields: [String] = []
         var current = ""
         var isInsideQuotes = false

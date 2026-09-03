@@ -54,6 +54,21 @@ enum GitLabDictionaryPackFetcher {
                 entries.append(contentsOf: try NavajoKitTrainingDataParser.parseEntries(fromCSV: csv))
             }
 
+            if !source.exampleSentenceFilePaths.isEmpty {
+                var sentences: [NavajoKitSentenceParser.Sentence] = []
+                for path in source.exampleSentenceFilePaths {
+                    guard let url = source.downloadURL(forPath: path) else {
+                        throw GitLabFetchError.sourceNotYetAvailable
+                    }
+                    let data = try await fetchData(from: url)
+                    guard let csv = String(data: data, encoding: .utf8) else {
+                        throw GitLabFetchError.invalidTextEncoding
+                    }
+                    sentences.append(contentsOf: NavajoKitSentenceParser.parseSentences(fromCSV: csv))
+                }
+                entries = enrichWithExampleSentences(entries, sentences: sentences)
+            }
+
             let manifest = DictionaryPackManifest(
                 id: source.id,
                 languageCode: source.languageCode,
@@ -67,6 +82,34 @@ enum GitLabDictionaryPackFetcher {
             let contents = DictionaryPackContents(manifest: manifest, entries: entries)
             let contentsData = try JSONEncoder().encode(contents)
             return try DictionaryPackImporter.importPack(from: contentsData)
+        }
+    }
+
+    /// Matches each entry's term against the sentences it appears in
+    /// (first match wins — one representative example is enough) and fills
+    /// in exampleSentence/exampleSentenceTranslation where found. Entries
+    /// with no matching sentence are returned unchanged.
+    private static func enrichWithExampleSentences(
+        _ entries: [DictionaryEntry],
+        sentences: [NavajoKitSentenceParser.Sentence]
+    ) -> [DictionaryEntry] {
+        guard !sentences.isEmpty else { return entries }
+
+        var sentenceIndexByToken: [String: Int] = [:]
+        for (index, sentence) in sentences.enumerated() {
+            for token in sentence.tokens {
+                let key = token.lowercased()
+                guard !key.isEmpty, sentenceIndexByToken[key] == nil else { continue }
+                sentenceIndexByToken[key] = index
+            }
+        }
+
+        return entries.map { entry in
+            guard let sentenceIndex = sentenceIndexByToken[entry.term.lowercased()] else { return entry }
+            var enriched = entry
+            enriched.exampleSentence = sentences[sentenceIndex].navajo
+            enriched.exampleSentenceTranslation = sentences[sentenceIndex].english
+            return enriched
         }
     }
 
