@@ -13,7 +13,7 @@ struct TextImportView: View {
 
     private var enabledLanguages: [SupportedLanguage] {
         let enabled = AppSettings.languages(from: enabledLanguagesRaw)
-        return SupportedLanguage.allCases.filter { enabled.contains($0) }
+        return SupportedLanguage.allCases.filter { enabled.contains($0) }.sorted { $0.displayName < $1.displayName }
     }
 
     var body: some View {

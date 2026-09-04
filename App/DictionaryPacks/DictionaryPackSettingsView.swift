@@ -13,6 +13,7 @@ struct DictionaryPackSettingsView: View {
     @State private var isPresentingImporter = false
     @State private var downloadingSourceIDs: Set<String> = []
     @State private var errorMessage: String?
+    @State private var successMessage: String?
 
     /// Catalog entries not already installed — once downloaded, a source
     /// moves from "Available to download" to "Installed" instead of
@@ -72,6 +73,22 @@ struct DictionaryPackSettingsView: View {
         }, message: {
             Text(errorMessage ?? "")
         })
+        .alert("Dictionary added", isPresented: .constant(successMessage != nil), actions: {
+            Button("OK") { successMessage = nil }
+        }, message: {
+            Text(successMessage ?? "")
+        })
+    }
+
+    /// How a user actually invokes the language they just added isn't
+    /// obvious from this screen alone — there's no toggle here, it's a
+    /// picker on a different tab — so name the exact next step rather than
+    /// leaving it to be discovered.
+    private func announceReadyToUse(_ manifest: DictionaryPackManifest) {
+        let displayName = SupportedLanguage.allCases
+            .first { $0.dictionaryPackLanguageCode == manifest.languageCode }?
+            .displayName ?? manifest.displayName
+        successMessage = "\(displayName) is ready. Select it as the language in Samples → Add Text, then tap any word to see its definition."
     }
 
     @ViewBuilder
@@ -107,6 +124,7 @@ struct DictionaryPackSettingsView: View {
                 let manifest = try DictionaryPackImporter.importPack(from: url)
                 installedPacks = DictionaryPackStore.load()
                 DictionaryLookupService.shared.invalidateCache(forLanguageCode: manifest.languageCode)
+                announceReadyToUse(manifest)
             } catch {
                 errorMessage = error.localizedDescription
             }
@@ -123,6 +141,7 @@ struct DictionaryPackSettingsView: View {
             let manifest = try await GitLabDictionaryPackFetcher.download(source)
             installedPacks = DictionaryPackStore.load()
             DictionaryLookupService.shared.invalidateCache(forLanguageCode: manifest.languageCode)
+            announceReadyToUse(manifest)
         } catch {
             errorMessage = error.localizedDescription
         }
