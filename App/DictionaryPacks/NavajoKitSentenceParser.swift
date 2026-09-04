@@ -23,7 +23,7 @@ enum NavajoKitSentenceParser {
     }
 
     static func parseSentences(fromCSV csv: String) -> [Sentence] {
-        let lines = csv.split(separator: "\n", omittingEmptySubsequences: true).map(String.init)
+        let lines = NavajoKitTrainingDataParser.splitLines(csv)
         guard let headerLine = lines.first else { return [] }
 
         let headers = NavajoKitTrainingDataParser.splitCSVRow(headerLine)

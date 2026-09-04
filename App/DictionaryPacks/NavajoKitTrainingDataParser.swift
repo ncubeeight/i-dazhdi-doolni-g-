@@ -39,7 +39,7 @@ enum NavajoKitParseError: LocalizedError {
 /// see DictionaryPackManifest.license on the resulting pack.
 enum NavajoKitTrainingDataParser {
     static func parseEntries(fromCSV csv: String) throws -> [DictionaryEntry] {
-        let lines = csv.split(separator: "\n", omittingEmptySubsequences: true).map(String.init)
+        let lines = splitLines(csv)
         guard let headerLine = lines.first else { return [] }
 
         let headers = splitCSVRow(headerLine)
@@ -69,6 +69,20 @@ enum NavajoKitTrainingDataParser {
             entries.append(DictionaryEntry(term: term, gloss: gloss, partOfSpeech: partOfSpeech, exampleSentence: nil, exampleSentenceTranslation: nil))
         }
         return entries
+    }
+
+    /// Splits into lines the same way `String.components(separatedBy: .newlines)`
+    /// does — deliberately not `.split(separator: "\n")`. Swift treats "\r\n"
+    /// as a single extended grapheme cluster (one `Character`), distinct from
+    /// a bare "\n" `Character`, so splitting on the `Character` "\n" finds
+    /// zero matches in a CRLF file and silently collapses the whole file into
+    /// one "line." NavajoKit's CSVs use CRLF line endings, which is exactly
+    /// what broke this the first time: the header parsed fine (its own
+    /// fields are still comma-separated correctly at the start of that one
+    /// giant blob) but zero data rows were ever reached.
+    /// Shared with NavajoKitSentenceParser for the same reason.
+    static func splitLines(_ text: String) -> [String] {
+        text.components(separatedBy: .newlines).filter { !$0.isEmpty }
     }
 
     /// Quote-aware comma split — a field wrapped in "..." may itself contain
