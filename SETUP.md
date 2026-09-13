@@ -14,10 +14,14 @@ regenerated from `project.yml` instead.
   `Déjà EntenduUITests/` folders and their stock template files — they're
   just not referenced by the new `project.yml`, so they won't compile in.
   Delete them whenever you like, or leave them; either is harmless.
-- Naming: app display name "Déjà Entendu", bundle ID
-  `com.ncubeeight.dejaentendu`, extension `com.ncubeeight.dejaentendu.share`,
-  App Group `group.com.ncubeeight.dejaentendu` — consistent across every
-  entitlements file and Swift constant that needs it.
+- Naming: app display name "Diné Dictionary Test", bundle ID
+  `com.ncubeeight.dinedictionarytest`, extension
+  `com.ncubeeight.dinedictionarytest.share`, App Group
+  `group.com.ncubeeight.dinedictionarytest` — consistent across every
+  entitlements file and Swift constant that needs it. Deliberately
+  different from `deja-entendu`'s `com.ncubeeight.dejaentendu` — this fork
+  needs its own App Store Connect record so a TestFlight build here never
+  touches that app's in-review listing.
 
 ## What you still need to do, in Terminal on your Mac
 
@@ -37,7 +41,10 @@ Then in Xcode:
    your developer account the first time it needs to.
 2. Before your first TestFlight upload, create the app record once at
    appstoreconnect.apple.com → My Apps → **+** → New App, using
-   `com.ncubeeight.dejaentendu` as the bundle ID.
+   `com.ncubeeight.dinedictionarytest` as the bundle ID (Automatic Signing
+   registers the App ID + App Group in your developer account the first
+   time Xcode needs them, but the App Store Connect app record itself is
+   always a manual, one-time step).
 3. Set the run destination to **Any iOS Device (arm64)**, then
    **Product → Archive**.
 4. In Organizer: select the archive → **Distribute App** → **App Store

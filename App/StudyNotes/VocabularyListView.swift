@@ -21,7 +21,7 @@ struct VocabularyListView: View {
                 ContentUnavailableView(
                     "No vocabulary yet",
                     systemImage: "text.book.closed",
-                    description: Text("Share a word or phrase from Translate (or any app) into Déjà Entendu to add it here.")
+                    description: Text("Share a word or phrase from Translate (or any app) into Diné Dictionary Test to add it here.")
                 )
             }
             ForEach(entries) { entry in

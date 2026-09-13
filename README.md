@@ -7,6 +7,13 @@ above is carried in this README and the repo description instead.)*
 Language support packs for learning — an extensible, **non-LLM** fork of
 [Déjà Entendu](https://github.com/ncubeeight/deja-entendu).
 
+Distributed for testing as **Diné Dictionary Test** (bundle ID
+`com.ncubeeight.dinedictionarytest`) — a distinct app identity and App
+Store Connect record from `deja-entendu`'s `com.ncubeeight.dejaentendu`,
+so a TestFlight build from this repo never touches that app's in-review
+listing. Named for its actual purpose here: getting this dictionary-pack
+build in front of Diné (Navajo) speakers to check the data for accuracy.
+
 ## Why this fork exists
 
 Déjà Entendu's mainline app leans on Apple's on-device Foundation Model LLM

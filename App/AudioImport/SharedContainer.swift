@@ -5,10 +5,10 @@ import Foundation
 ///
 /// Both the main app target AND the Share Extension target must have the
 /// SAME App Group capability enabled in Signing & Capabilities:
-///   group.com.ncubeeight.dejaentendu
+///   group.com.ncubeeight.dinedictionarytest
 enum SharedContainer {
 
-    private static let appGroupID = "group.com.ncubeeight.dejaentendu"
+    private static let appGroupID = "group.com.ncubeeight.dinedictionarytest"
 
     static func inboxDirectory() -> URL? {
         guard let container = FileManager.default

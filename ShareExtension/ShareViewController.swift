@@ -11,7 +11,7 @@ import UniformTypeIdentifiers
 final class ShareViewController: UIViewController {
 
     // Must exactly match the App Group ID in SharedContainer.swift.
-    private let appGroupID = "group.com.ncubeeight.dejaentendu"
+    private let appGroupID = "group.com.ncubeeight.dinedictionarytest"
 
     private let spinner = UIActivityIndicatorView(style: .medium)
     private let label = UILabel()
@@ -20,7 +20,7 @@ final class ShareViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
 
-        label.text = "Adding to Déjà Entendu…"
+        label.text = "Adding to Diné Dictionary Test…"
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         spinner.translatesAutoresizingMaskIntoConstraints = false
@@ -55,7 +55,7 @@ final class ShareViewController: UIViewController {
 
         var message: String {
             switch self {
-            case .audioAdded: return "Added to Déjà Entendu ✓"
+            case .audioAdded: return "Added to Diné Dictionary Test ✓"
             case .vocabularyAdded: return "Added to Vocabulary ✓"
             case .failed: return "Couldn't read that"
             }

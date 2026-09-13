@@ -77,7 +77,7 @@ struct HomeSummaryView: View {
                 vocabulary = VocabularyStore.load()
                 samples = Self.loadSamples()
             }
-            .confirmationDialog("Add to Déjà Entendu", isPresented: $isAddActionSheetPresented, titleVisibility: .visible) {
+            .confirmationDialog("Add to Diné Dictionary Test", isPresented: $isAddActionSheetPresented, titleVisibility: .visible) {
                 Button("Import a Recording") { selectedTab = 1 }
                 Button("Add Text") { isAddTextSheetPresented = true }
                 Button("Scan Photo") { isAddImageSheetPresented = true }
@@ -134,7 +134,7 @@ struct HomeSummaryView: View {
     @ViewBuilder
     private var titleBanner: some View {
         VStack(spacing: 10) {
-            Text("Déjà Entendu")
+            Text("Diné Dictionary Test")
                 .font(.system(size: 34, weight: .bold, design: .rounded))
                 .foregroundStyle(.white)
             Text("You heard it before.\nLet's try to remember it.")

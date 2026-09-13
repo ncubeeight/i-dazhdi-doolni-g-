@@ -85,7 +85,7 @@ struct IrohaExplorerView: View {
 
             Text("You can add multiple languages in your uploader list by selecting others the Settings tab. A sample in the app processes only one language at a time.")
 
-            Text("Thank you for using Déjà Entendu!")
+            Text("Thank you for using Diné Dictionary Test!")
         }
         .font(.body)
         .padding(.horizontal, 24)

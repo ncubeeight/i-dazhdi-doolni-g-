@@ -18,7 +18,7 @@
 name: Déjà Entendu
 
 options:
-  bundleIdPrefix: com.ncubeeight.dejaentendu
+  bundleIdPrefix: com.ncubeeight.dinedictionarytest
   deploymentTarget:
     iOS: "26.0"
   developmentLanguage: en
@@ -38,7 +38,7 @@ targets:
     info:
       path: App/Info.plist
       properties:
-        CFBundleDisplayName: "Déjà Entendu"
+        CFBundleDisplayName: "Diné Dictionary Test"
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSRequiresIPhoneOS: true
@@ -60,12 +60,12 @@ targets:
       path: App/DejaEntendu.entitlements
       properties:
         com.apple.security.application-groups:
-          - group.com.ncubeeight.dejaentendu
+          - group.com.ncubeeight.dinedictionarytest
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.ncubeeight.dejaentendu
+        PRODUCT_BUNDLE_IDENTIFIER: com.ncubeeight.dinedictionarytest
         MARKETING_VERSION: "1.0"
-        CURRENT_PROJECT_VERSION: "24"
+        CURRENT_PROJECT_VERSION: "1"
         TARGETED_DEVICE_FAMILY: "1,2"
         SUPPORTS_MACCATALYST: YES
         DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER: NO
@@ -83,7 +83,7 @@ targets:
     info:
       path: ShareExtension/Info.plist
       properties:
-        CFBundleDisplayName: "Add to Déjà Entendu"
+        CFBundleDisplayName: "Add to Diné Dictionary Test"
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         NSExtension:
@@ -98,12 +98,12 @@ targets:
       path: ShareExtension/AddToDejaEntendu.entitlements
       properties:
         com.apple.security.application-groups:
-          - group.com.ncubeeight.dejaentendu
+          - group.com.ncubeeight.dinedictionarytest
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.ncubeeight.dejaentendu.share
+        PRODUCT_BUNDLE_IDENTIFIER: com.ncubeeight.dinedictionarytest.share
         MARKETING_VERSION: "1.0"
-        CURRENT_PROJECT_VERSION: "24"
+        CURRENT_PROJECT_VERSION: "1"
         SKIP_INSTALL: "YES"
         TARGETED_DEVICE_FAMILY: "1,2"
         SUPPORTS_MACCATALYST: YES
