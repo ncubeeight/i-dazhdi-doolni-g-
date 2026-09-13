@@ -37,13 +37,10 @@ enum AudioTranscoder {
             .appendingPathComponent(UUID().uuidString)
             .appendingPathExtension("m4a")
 
-        export.outputURL = outputURL
-        export.outputFileType = .m4a
-
-        await export.export()
-
-        guard export.status == .completed else {
-            throw AudioTranscoderError.exportFailed(export.error?.localizedDescription ?? "unknown error")
+        do {
+            try await export.export(to: outputURL, as: .m4a)
+        } catch {
+            throw AudioTranscoderError.exportFailed(error.localizedDescription)
         }
 
         return outputURL
